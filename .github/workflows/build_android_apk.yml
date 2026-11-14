@@ -29,7 +29,9 @@ jobs:
 
       - name: Get Dependencies
         working-directory: mobile
-        run: flutter pub get
+        run: |
+          flutter clean
+          flutter pub get
 
       - name: Build Android APK
         working-directory: mobile
