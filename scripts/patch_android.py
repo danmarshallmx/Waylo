@@ -77,7 +77,18 @@ def patch_icons():
             f.write('<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n    <background android:drawable="@color/ic_launcher_background"/>\n    <foreground android:drawable="@mipmap/ic_launcher"/>\n</adaptive-icon>\n')
         print("Patched Waylo purple icons and adaptive icon XML successfully")
 
+def cleanup_kts():
+    for root, dirs, files in os.walk('android'):
+        for f in files:
+            if f.endswith('.gradle.kts'):
+                try:
+                    os.remove(os.path.join(root, f))
+                    print(f"Removed redundant {f}")
+                except Exception:
+                    pass
+
 if __name__ == '__main__':
+    cleanup_kts()
     patch_build_gradle()
     patch_android_manifest()
     patch_icons()

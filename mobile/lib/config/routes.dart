@@ -70,7 +70,7 @@ class AppRouter {
               path: RoutePaths.geolocation,
               name: 'geolocation',
               pageBuilder: (context, state) => const NoTransitionPage(
-                child: GeolocationScreen(initialPois: defaultGuadalajaraPois),
+                child: GeolocationScreen(),
               ),
             ),
             GoRoute(

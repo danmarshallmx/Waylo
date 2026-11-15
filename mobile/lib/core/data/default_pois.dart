@@ -1,6 +1,6 @@
 import 'package:waylo/core/models/poi.dart';
 
-final List<POI> defaultGuadalajaraPois = [
+const List<POI> defaultGuadalajaraPois = [
   const POI(
     id: 'gdl_cabanas',
     cityId: 'city_guadalajara',
