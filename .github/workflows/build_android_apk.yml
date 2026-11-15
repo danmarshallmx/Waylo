@@ -27,6 +27,54 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Align Official Android Scaffold
+        working-directory: mobile
+        run: |
+          flutter create --org com.waylo --project-name waylo --platforms=android .
+          python3 -c "
+          import re
+          path = 'android/app/build.gradle'
+          try:
+              with open(path, 'r') as f:
+                  txt = f.read()
+              if 'coreLibraryDesugaringEnabled' not in txt:
+                  txt = re.sub(r'(compileOptions\s*\{)', r'\1\n        coreLibraryDesugaringEnabled true', txt)
+              if 'coreLibraryDesugaring' not in txt:
+                  if 'dependencies {' in txt:
+                      txt = re.sub(r'(dependencies\s*\{)', r'\1\n    coreLibraryDesugaring \"com.android.tools:desugar_jdk_libs:2.1.5\"', txt)
+                  else:
+                      txt += '\ndependencies {\n    coreLibraryDesugaring \"com.android.tools:desugar_jdk_libs:2.1.5\"\n}\n'
+              with open(path, 'w') as f:
+                  f.write(txt)
+              print('Patched build.gradle successfully')
+          except Exception as e:
+              print('Patch error:', e)
+          "
+          python3 -c "
+          path = 'android/app/src/main/AndroidManifest.xml'
+          try:
+              with open(path, 'r') as f:
+                  txt = f.read()
+              perms = '''
+    <uses-permission android:name=\"android.permission.INTERNET\" />
+    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />
+    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />
+    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />
+    <uses-permission android:name=\"android.permission.ACCESS_BACKGROUND_LOCATION\" />
+    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />
+    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE_LOCATION\" />
+    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />
+    <uses-permission android:name=\"android.permission.POST_NOTIFICATIONS\" />
+              '''
+              if 'android.permission.ACCESS_FINE_LOCATION' not in txt:
+                  txt = txt.replace('<application', perms + '\n    <application')
+                  with open(path, 'w') as f:
+                      f.write(txt)
+                  print('Patched AndroidManifest successfully')
+          except Exception as e:
+              print('Manifest patch error:', e)
+          "
+
       - name: Get Dependencies
         working-directory: mobile
         run: |
