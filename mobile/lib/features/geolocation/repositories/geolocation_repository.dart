@@ -250,8 +250,8 @@ class GeolocationRepository {
 
   // ──────────────────── Audio Capsule ────────────────────
 
-  /// Returns the local file path for a POI's audio capsule, or `null` if not
-  /// available.
+  /// Returns the local file path for a POI's audio capsule, or falls back to
+  /// bundled asset path if not yet downloaded to the documents directory.
   Future<String?> getAudioCapsulePath(String poiId, String language) async {
     try {
       final dir = await getApplicationDocumentsDirectory();
@@ -263,9 +263,9 @@ class GeolocationRepository {
       if (await file.exists()) {
         return filePath;
       }
-      return null;
+      return 'assets/audio/$poiId.m4a';
     } catch (_) {
-      return null;
+      return 'assets/audio/$poiId.m4a';
     }
   }
 

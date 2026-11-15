@@ -24,11 +24,12 @@ class GeolocationInitial extends GeolocationState {
   const GeolocationInitial();
 }
 
-/// Active monitoring state – tracks position, nearby POIs, and audio playback.
+/// Active monitoring state – tracks position, nearby POIs, all monitored POIs, and audio playback.
 class GeolocationMonitoring extends GeolocationState {
   final double currentLat;
   final double currentLng;
   final List<POI> nearbyPOIs;
+  final List<POI> allPOIs;
   final Set<String> activeGeofences;
   final AudioCapsule? currentAudio;
   final bool isPlayingAudio;
@@ -37,6 +38,7 @@ class GeolocationMonitoring extends GeolocationState {
     required this.currentLat,
     required this.currentLng,
     this.nearbyPOIs = const [],
+    this.allPOIs = const [],
     this.activeGeofences = const {},
     this.currentAudio,
     this.isPlayingAudio = false,
@@ -46,6 +48,7 @@ class GeolocationMonitoring extends GeolocationState {
     double? currentLat,
     double? currentLng,
     List<POI>? nearbyPOIs,
+    List<POI>? allPOIs,
     Set<String>? activeGeofences,
     AudioCapsule? currentAudio,
     bool? isPlayingAudio,
@@ -55,6 +58,7 @@ class GeolocationMonitoring extends GeolocationState {
       currentLat: currentLat ?? this.currentLat,
       currentLng: currentLng ?? this.currentLng,
       nearbyPOIs: nearbyPOIs ?? this.nearbyPOIs,
+      allPOIs: allPOIs ?? this.allPOIs,
       activeGeofences: activeGeofences ?? this.activeGeofences,
       currentAudio: clearAudio ? null : (currentAudio ?? this.currentAudio),
       isPlayingAudio: isPlayingAudio ?? this.isPlayingAudio,
@@ -66,6 +70,7 @@ class GeolocationMonitoring extends GeolocationState {
         currentLat,
         currentLng,
         nearbyPOIs,
+        allPOIs,
         activeGeofences,
         currentAudio,
         isPlayingAudio,

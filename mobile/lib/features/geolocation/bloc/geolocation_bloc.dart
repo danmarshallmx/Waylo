@@ -94,9 +94,10 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
         }
       });
 
-      emit(const GeolocationMonitoring(
+      emit(GeolocationMonitoring(
         currentLat: 0,
         currentLng: 0,
+        allPOIs: _allPois,
       ));
     } catch (e) {
       emit(GeolocationError(message: 'Failed to start monitoring: $e'));
@@ -172,6 +173,7 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
         currentLat: event.latitude,
         currentLng: event.longitude,
         nearbyPOIs: nearby,
+        allPOIs: _allPois,
         activeGeofences: activeGeofenceIds,
       ));
     } else {
@@ -179,6 +181,7 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
         currentLat: event.latitude,
         currentLng: event.longitude,
         nearbyPOIs: nearby,
+        allPOIs: _allPois,
         activeGeofences: activeGeofenceIds,
       ));
     }
@@ -188,31 +191,33 @@ class GeolocationBloc extends Bloc<GeolocationEvent, GeolocationState> {
     POIProximityTriggered event,
     Emitter<GeolocationState> emit,
   ) async {
-    if (_triggeredPoiIds.contains(event.poi.id)) return;
-    _triggeredPoiIds.add(event.poi.id);
+    // Only send notification once per session for proximity alert
+    if (!_triggeredPoiIds.contains(event.poi.id)) {
+      _triggeredPoiIds.add(event.poi.id);
+      await _repository.sendLocalNotification(event.poi);
+    }
 
-    // Send a local notification for the POI.
-    await _repository.sendLocalNotification(event.poi);
-
-    // Auto-load the audio capsule.
+    // Auto-load and play the audio capsule
     try {
       final capsulePath = await _repository.getAudioCapsulePath(
-        event.poi.id,
-        AppConfig.defaultLanguage,
+            event.poi.id,
+            AppConfig.defaultLanguage,
+          ) ??
+          event.poi.audioUrl ??
+          'assets/audio/${event.poi.id}.m4a';
+
+      final capsule = AudioCapsule(
+        id: '${event.poi.id}_${AppConfig.defaultLanguage}',
+        poiId: event.poi.id,
+        language: AppConfig.defaultLanguage,
+        title: event.poi.name,
+        description: event.poi.description,
+        audioUrl: capsulePath,
+        localPath: capsulePath,
+        duration: const Duration(seconds: 45),
+        sizeBytes: 120000,
       );
-      if (capsulePath != null) {
-        final capsule = AudioCapsule(
-          id: '${event.poi.id}_${AppConfig.defaultLanguage}',
-          poiId: event.poi.id,
-          language: AppConfig.defaultLanguage,
-          title: event.poi.name,
-          audioUrl: capsulePath,
-          localPath: capsulePath,
-          duration: Duration.zero,
-          sizeBytes: 0,
-        );
-        add(AudioCapsuleStarted(capsule: capsule));
-      }
+      add(AudioCapsuleStarted(capsule: capsule));
     } catch (_) {
       // Audio capsule not available – notification was already sent.
     }

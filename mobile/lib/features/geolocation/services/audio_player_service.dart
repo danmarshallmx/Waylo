@@ -18,6 +18,12 @@ class AudioPlayerService {
     try {
       if (pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')) {
         await _player.setUrl(pathOrUrl);
+      } else if (pathOrUrl.startsWith('asset://') || pathOrUrl.startsWith('assets/')) {
+        final assetPath = pathOrUrl.replaceFirst('asset://', '');
+        await _player.setAsset(assetPath);
+      } else if (!pathOrUrl.contains('/') && !pathOrUrl.contains('\\')) {
+        // Simple key like 'gdl_catedral' or 'gdl_cabanas'
+        await _player.setAsset('assets/audio/$pathOrUrl.m4a');
       } else {
         await _player.setFilePath(pathOrUrl);
       }

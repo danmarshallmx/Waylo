@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:waylo/core/data/default_pois.dart';
 import 'package:waylo/features/city_packages/screens/city_packages_screen.dart';
 import 'package:waylo/features/geolocation/screens/geolocation_screen.dart';
 import 'package:waylo/features/groups/screens/groups_list_screen.dart';
@@ -69,7 +70,7 @@ class AppRouter {
               path: RoutePaths.geolocation,
               name: 'geolocation',
               pageBuilder: (context, state) => const NoTransitionPage(
-                child: GeolocationScreen(),
+                child: GeolocationScreen(initialPois: defaultGuadalajaraPois),
               ),
             ),
             GoRoute(
