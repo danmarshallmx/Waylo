@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:waylo/core/widgets/waylo_logo.dart';
 import 'package:waylo/features/city_packages/bloc/city_packages_bloc.dart';
 import 'package:waylo/features/city_packages/bloc/city_packages_event.dart';
 import 'package:waylo/features/city_packages/bloc/city_packages_state.dart';
@@ -13,13 +14,10 @@ class CityPackagesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Destinos y Paquetes Offline',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: const WayloLogo(size: 32),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh_rounded),
             tooltip: 'Buscar actualizaciones',
             onPressed: () {
               context.read<CityPackagesBloc>().add(const CheckForUpdates());

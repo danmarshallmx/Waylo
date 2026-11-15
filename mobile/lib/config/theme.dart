@@ -12,32 +12,32 @@ class WayloTheme {
 
   // ── Color Palette ─────────────────────────────────────────────────────────
 
-  /// Warm coral — primary brand color.
-  static const Color _primaryColor = Color(0xFFE8634A);
+  /// Vibrant Electric Violet — primary brand color.
+  static const Color _primaryColor = Color(0xFF7C3AED);
 
-  /// Deep navy — used for text and dark surfaces.
+  /// Pure white on primary surfaces.
   static const Color _onPrimaryColor = Color(0xFFFFFFFF);
 
-  /// Warm sand — secondary accent.
-  static const Color _secondaryColor = Color(0xFFF5A623);
+  /// Radiant Lavender — secondary accent.
+  static const Color _secondaryColor = Color(0xFFA855F7);
 
-  /// Deep teal — tertiary accent for maps and highlights.
-  static const Color _tertiaryColor = Color(0xFF2BAC76);
+  /// Vivid Cyan / Waypoint accent for maps and highlights.
+  static const Color _tertiaryColor = Color(0xFF06B6D4);
 
-  /// Off-white background.
-  static const Color _backgroundColor = Color(0xFFF9F6F2);
+  /// Soft lavender-tinted canvas background.
+  static const Color _backgroundColor = Color(0xFFF9F7FD);
 
   /// Pure white for cards.
   static const Color _surfaceColor = Color(0xFFFFFFFF);
 
   /// Error red.
-  static const Color _errorColor = Color(0xFFD32F2F);
+  static const Color _errorColor = Color(0xFFEF4444);
 
-  /// Dark mode surface.
-  static const Color _darkSurfaceColor = Color(0xFF1E1E2C);
+  /// Dark mode rich violet surface.
+  static const Color _darkSurfaceColor = Color(0xFF1E1635);
 
-  /// Dark mode background.
-  static const Color _darkBackgroundColor = Color(0xFF14141F);
+  /// Dark mode deep obsidian violet background.
+  static const Color _darkBackgroundColor = Color(0xFF130D24);
 
   // ── Border Radius ─────────────────────────────────────────────────────────
 
@@ -76,9 +76,9 @@ class WayloTheme {
       error: _errorColor,
       onError: Colors.white,
       surface: _surfaceColor,
-      onSurface: const Color(0xFF2D2D3A),
+      onSurface: const Color(0xFF1E1238),
       surfaceContainerHighest: _backgroundColor,
-      outline: const Color(0xFFD6D6DE),
+      outline: const Color(0xFFE4DEF5),
     );
 
     return ThemeData(
@@ -385,9 +385,9 @@ class WayloTheme {
       error: const Color(0xFFEF5350),
       onError: Colors.white,
       surface: _darkSurfaceColor,
-      onSurface: const Color(0xFFE8E8F0),
+      onSurface: const Color(0xFFF1EDF9),
       surfaceContainerHighest: _darkBackgroundColor,
-      outline: const Color(0xFF3A3A4C),
+      outline: const Color(0xFF3B2E58),
     );
 
     return ThemeData(

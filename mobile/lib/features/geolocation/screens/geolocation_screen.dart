@@ -354,10 +354,10 @@ class _GeolocationScreenState extends State<GeolocationScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        color: isPlaying ? Colors.deepPurple.shade50 : Colors.white,
+        color: isPlaying ? theme.colorScheme.primary.withOpacity(0.08) : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isPlaying ? Colors.deepPurple : Colors.grey.shade200,
+          color: isPlaying ? theme.colorScheme.primary : Colors.grey.shade200,
           width: isPlaying ? 1.5 : 1,
         ),
         boxShadow: [
@@ -491,7 +491,7 @@ class _GeolocationScreenState extends State<GeolocationScreen> {
                 FilledButton.tonalIcon(
                   style: FilledButton.styleFrom(
                     backgroundColor: isPlaying
-                        ? Colors.deepPurple
+                        ? theme.colorScheme.primary
                         : theme.colorScheme.primaryContainer,
                     foregroundColor: isPlaying
                         ? Colors.white

@@ -54,6 +54,30 @@ def patch_android_manifest():
     else:
         print("AndroidManifest.xml already contains permissions")
 
+def patch_icons():
+    import shutil
+    backup_dir = os.path.join('assets', 'icons')
+    res_dir = os.path.join('android', 'app', 'src', 'main', 'res')
+    if os.path.exists(backup_dir) and os.path.exists(res_dir):
+        for folder in ['mipmap-mdpi', 'mipmap-hdpi', 'mipmap-xhdpi', 'mipmap-xxhdpi', 'mipmap-xxxhdpi']:
+            src = os.path.join(backup_dir, f'{folder}.png')
+            dst_folder = os.path.join(res_dir, folder)
+            os.makedirs(dst_folder, exist_ok=True)
+            if os.path.exists(src):
+                shutil.copy2(src, os.path.join(dst_folder, 'ic_launcher.png'))
+        
+        colors_xml = os.path.join(res_dir, 'values', 'colors.xml')
+        os.makedirs(os.path.join(res_dir, 'values'), exist_ok=True)
+        with open(colors_xml, 'w', encoding='utf-8') as f:
+            f.write('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#7C3AED</color>\n</resources>\n')
+        
+        anydpi_xml = os.path.join(res_dir, 'mipmap-anydpi-v26', 'ic_launcher.xml')
+        os.makedirs(os.path.join(res_dir, 'mipmap-anydpi-v26'), exist_ok=True)
+        with open(anydpi_xml, 'w', encoding='utf-8') as f:
+            f.write('<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n    <background android:drawable="@color/ic_launcher_background"/>\n    <foreground android:drawable="@mipmap/ic_launcher"/>\n</adaptive-icon>\n')
+        print("Patched Waylo purple icons and adaptive icon XML successfully")
+
 if __name__ == '__main__':
     patch_build_gradle()
     patch_android_manifest()
+    patch_icons()
