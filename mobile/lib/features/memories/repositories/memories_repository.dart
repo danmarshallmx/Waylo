@@ -16,13 +16,24 @@ class MemoriesRepository {
       : _supabase = supabase ?? Supabase.instance.client;
 
   Future<List<MemoryPhoto>> getGroupPhotos(String groupId) async {
-    final response = await _supabase
-        .from('memory_photos')
-        .select('*')
-        .eq('group_id', groupId)
-        .order('captured_at', ascending: false);
+    try {
+      final uuidRegex = RegExp(
+          r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
+      if (!uuidRegex.hasMatch(groupId)) {
+        return [];
+      }
 
-    return (response as List).map((json) => MemoryPhoto.fromJson(json)).toList();
+      final response = await _supabase
+          .from('memory_photos')
+          .select('*')
+          .eq('group_id', groupId)
+          .order('captured_at', ascending: false);
+
+      return (response as List).map((json) => MemoryPhoto.fromJson(json)).toList();
+    } catch (e) {
+      debugPrint('getGroupPhotos error: $e');
+      return [];
+    }
   }
 
   /// Extracts EXIF coordinates and UTC timestamp from local image file

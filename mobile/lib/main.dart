@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:path_provider/path_provider.dart';
@@ -57,6 +58,15 @@ Future<void> main() async {
     ),
   );
 
+  // Initialize date formatting for Spanish & international locales
+  try {
+    await initializeDateFormatting('es', null);
+    await initializeDateFormatting('es_MX', null);
+    await initializeDateFormatting('en', null);
+  } catch (e) {
+    debugPrint('DateFormatting init: $e');
+  }
+
   // Initialize Supabase.
   await Supabase.initialize(
     url: AppConfig.supabaseUrl,
@@ -68,6 +78,15 @@ Future<void> main() async {
       logLevel: RealtimeLogLevel.info,
     ),
   );
+
+  // Authenticate anonymously so user has a valid Supabase UUID for real-time groups & memories
+  try {
+    if (Supabase.instance.client.auth.currentUser == null) {
+      await Supabase.instance.client.auth.signInAnonymously();
+    }
+  } catch (e) {
+    debugPrint('Supabase anonymous sign-in: $e');
+  }
 
   // Initialize Hive for local NoSQL caching.
   final appDocDir = await getApplicationDocumentsDirectory();

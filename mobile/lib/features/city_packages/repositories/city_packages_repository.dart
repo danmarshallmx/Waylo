@@ -14,78 +14,129 @@ import 'package:waylo/core/models/poi.dart';
 
 class CityPackagesRepository {
   final SupabaseClient _supabase;
-  late final Box<Map> _cityBox;
+  Box<Map>? _cityBox;
   Database? _db;
-  bool _initialized = false;
+  Future<void>? _initFuture;
 
   CityPackagesRepository({SupabaseClient? supabaseClient})
       : _supabase = supabaseClient ?? Supabase.instance.client;
 
-  Future<void> _ensureInitialized() async {
-    if (_initialized) return;
-
-    _cityBox = await Hive.openBox<Map>('downloaded_cities');
-
-    final dbPath = await getDatabasesPath();
-    _db = await openDatabase(
-      '$dbPath/waylo_cities.db',
-      version: 1,
-      onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE IF NOT EXISTS pois (
-            id TEXT PRIMARY KEY,
-            city_id TEXT NOT NULL,
-            name TEXT NOT NULL,
-            description TEXT,
-            latitude REAL NOT NULL,
-            longitude REAL NOT NULL,
-            category TEXT NOT NULL,
-            rating REAL DEFAULT 0,
-            image_url TEXT,
-            audio_url TEXT,
-            weight INTEGER DEFAULT 1,
-            localized_names TEXT,
-            tags TEXT
-          )
-        ''');
-        await db.execute('''
-          CREATE TABLE IF NOT EXISTS audio_capsules (
-            id TEXT PRIMARY KEY,
-            poi_id TEXT NOT NULL,
-            language TEXT NOT NULL,
-            title TEXT NOT NULL,
-            description TEXT,
-            audio_url TEXT NOT NULL,
-            local_path TEXT,
-            duration_seconds INTEGER DEFAULT 0,
-            size_bytes INTEGER DEFAULT 0
-          )
-        ''');
-        await db.execute(
-          'CREATE INDEX IF NOT EXISTS idx_pois_city_id ON pois(city_id)',
-        );
-        await db.execute(
-          'CREATE INDEX IF NOT EXISTS idx_audio_poi_id ON audio_capsules(poi_id)',
-        );
-      },
-    );
-
-    _initialized = true;
+  Future<void> _ensureInitialized() {
+    return _initFuture ??= _doInitialize();
   }
 
-  /// Fetches the list of available city packages from Supabase.
+  Future<void> _doInitialize() async {
+    _cityBox ??= await Hive.openBox<Map>('downloaded_cities');
+
+    if (_db == null) {
+      final dbPath = await getDatabasesPath();
+      _db = await openDatabase(
+        '$dbPath/waylo_cities.db',
+        version: 1,
+        onCreate: (db, version) async {
+          await db.execute('''
+            CREATE TABLE IF NOT EXISTS pois (
+              id TEXT PRIMARY KEY,
+              city_id TEXT NOT NULL,
+              name TEXT NOT NULL,
+              description TEXT,
+              latitude REAL NOT NULL,
+              longitude REAL NOT NULL,
+              category TEXT NOT NULL,
+              rating REAL DEFAULT 0,
+              image_url TEXT,
+              audio_url TEXT,
+              weight INTEGER DEFAULT 1,
+              localized_names TEXT,
+              tags TEXT
+            )
+          ''');
+          await db.execute('''
+            CREATE TABLE IF NOT EXISTS audio_capsules (
+              id TEXT PRIMARY KEY,
+              poi_id TEXT NOT NULL,
+              language TEXT NOT NULL,
+              title TEXT NOT NULL,
+              description TEXT,
+              audio_url TEXT NOT NULL,
+              local_path TEXT,
+              duration_seconds INTEGER DEFAULT 0,
+              size_bytes INTEGER DEFAULT 0
+            )
+          ''');
+          await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_pois_city_id ON pois(city_id)',
+          );
+          await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_audio_poi_id ON audio_capsules(poi_id)',
+          );
+        },
+      );
+    }
+  }
+
+  static final List<CityPackage> _defaultCities = [
+    CityPackage(
+      id: 'city_guadalajara',
+      name: 'Guadalajara',
+      country: 'México',
+      imageUrl: 'https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?auto=format&fit=crop&w=800&q=80',
+      description: 'Capital cultural de Jalisco, tierra del mariachi, tequila y rica arquitectura colonial.',
+      sizeMb: 42.5,
+      version: 1,
+      poiCount: 7,
+      audioCapsuleCount: 7,
+      updatedAt: DateTime(2026, 11, 14),
+      isDownloaded: false,
+    ),
+    CityPackage(
+      id: 'city_madrid',
+      name: 'Madrid',
+      country: 'España',
+      imageUrl: 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=800&q=80',
+      description: 'Vibrante capital española con museos de clase mundial y bulevares históricos.',
+      sizeMb: 68.0,
+      version: 1,
+      poiCount: 15,
+      audioCapsuleCount: 12,
+      updatedAt: DateTime(2026, 11, 14),
+      isDownloaded: false,
+    ),
+    CityPackage(
+      id: 'city_liverpool',
+      name: 'Liverpool',
+      country: 'Reino Unido',
+      imageUrl: 'https://images.unsplash.com/photo-1574880537494-1a9806141a87?auto=format&fit=crop&w=800&q=80',
+      description: 'Ciudad marítima patrimonio musical de Los Beatles y gran historia arquitectónica.',
+      sizeMb: 35.2,
+      version: 1,
+      poiCount: 10,
+      audioCapsuleCount: 8,
+      updatedAt: DateTime(2026, 11, 14),
+      isDownloaded: false,
+    ),
+  ];
+
+  /// Fetches the list of available city packages from Supabase with offline fallback.
   Future<List<CityPackage>> fetchAvailableCities() async {
     await _ensureInitialized();
 
-    final response = await _supabase
-        .from('city_packages')
-        .select()
-        .eq('is_active', true)
-        .order('name');
+    try {
+      final response = await _supabase
+          .from('city_packages')
+          .select()
+          .eq('is_active', true)
+          .order('name');
 
-    return (response as List<dynamic>)
-        .map((json) => CityPackage.fromJson(json as Map<String, dynamic>))
-        .toList();
+      final list = (response as List<dynamic>)
+          .map((json) => CityPackage.fromJson(json as Map<String, dynamic>))
+          .toList();
+      if (list.isNotEmpty) return list;
+    } catch (e) {
+      // Graceful fallback to default curated cities if network or Supabase delayed
+    }
+
+    return _defaultCities;
   }
 
   /// Downloads a city package with all assets.
@@ -205,7 +256,7 @@ class CityPackagesRepository {
     }
 
     // 6. Store city package metadata in Hive
-    await _cityBox.put(cityId, cityPackage.toJson());
+    await _cityBox!.put(cityId, cityPackage.toJson());
     controller.add(1.0);
   }
 
@@ -214,10 +265,12 @@ class CityPackagesRepository {
     await _ensureInitialized();
 
     final cities = <CityPackage>[];
-    for (final key in _cityBox.keys) {
-      final json = _cityBox.get(key);
-      if (json != null) {
-        cities.add(CityPackage.fromJson(Map<String, dynamic>.from(json)));
+    if (_cityBox != null) {
+      for (final key in _cityBox!.keys) {
+        final json = _cityBox!.get(key);
+        if (json != null) {
+          cities.add(CityPackage.fromJson(Map<String, dynamic>.from(json)));
+        }
       }
     }
     return cities;
@@ -228,7 +281,7 @@ class CityPackagesRepository {
     await _ensureInitialized();
 
     // Remove from Hive
-    await _cityBox.delete(cityId);
+    await _cityBox?.delete(cityId);
 
     // Remove POIs from SQLite
     await _db!.delete('pois', where: 'city_id = ?', whereArgs: [cityId]);

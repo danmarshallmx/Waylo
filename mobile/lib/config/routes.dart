@@ -83,7 +83,7 @@ class AppRouter {
               path: RoutePaths.memories,
               name: 'memories',
               pageBuilder: (context, state) => const NoTransitionPage(
-                child: MemoriesScreen(groupId: 'demo_group_liverpool'),
+                child: MemoriesScreen(groupId: '00000000-0000-0000-0000-000000000001'),
               ),
             ),
           ],

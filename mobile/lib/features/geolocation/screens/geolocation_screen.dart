@@ -219,10 +219,14 @@ class _GeolocationScreenState extends State<GeolocationScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                'Atracciones Cercanas (<40m Geocerca)',
-                                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                              Expanded(
+                                child: Text(
+                                  'Atracciones (<40m Geocerca)',
+                                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
+                              const SizedBox(width: 8),
                               Text(
                                 '${nearby.length} detectadas',
                                 style: const TextStyle(fontSize: 12, color: Colors.grey),
