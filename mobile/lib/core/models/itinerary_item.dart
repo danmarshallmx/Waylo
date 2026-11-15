@@ -47,6 +47,7 @@ class ItineraryItem extends Equatable {
   final DateTime scheduledDate;
   final String? scheduledTime;
   final int durationMinutes;
+  final String? customTitle;
   final ItineraryStatus status;
   final String? notes;
   final int sortOrder;
@@ -62,6 +63,7 @@ class ItineraryItem extends Equatable {
     required this.addedBy,
     required this.scheduledDate,
     this.scheduledTime,
+    this.customTitle,
     this.durationMinutes = 60,
     this.status = ItineraryStatus.planned,
     this.notes,
@@ -78,6 +80,7 @@ class ItineraryItem extends Equatable {
       addedBy: json['added_by'] as String,
       scheduledDate: DateTime.parse(json['scheduled_date'] as String),
       scheduledTime: json['scheduled_time'] as String?,
+      customTitle: json['custom_title'] as String?,
       durationMinutes: json['duration_minutes'] as int? ?? 60,
       status: ItineraryStatus.fromString(
           json['status'] as String? ?? 'planned'),
@@ -98,6 +101,7 @@ class ItineraryItem extends Equatable {
       'added_by': addedBy,
       'scheduled_date': scheduledDate.toIso8601String().split('T').first,
       'scheduled_time': scheduledTime,
+      'custom_title': customTitle,
       'duration_minutes': durationMinutes,
       'status': status.toJsonString(),
       'notes': notes,
@@ -113,6 +117,7 @@ class ItineraryItem extends Equatable {
     String? addedBy,
     DateTime? scheduledDate,
     String? scheduledTime,
+    String? customTitle,
     int? durationMinutes,
     ItineraryStatus? status,
     String? notes,
@@ -127,6 +132,7 @@ class ItineraryItem extends Equatable {
       addedBy: addedBy ?? this.addedBy,
       scheduledDate: scheduledDate ?? this.scheduledDate,
       scheduledTime: scheduledTime ?? this.scheduledTime,
+      customTitle: customTitle ?? this.customTitle,
       durationMinutes: durationMinutes ?? this.durationMinutes,
       status: status ?? this.status,
       notes: notes ?? this.notes,
@@ -149,6 +155,7 @@ class ItineraryItem extends Equatable {
         addedBy,
         scheduledDate,
         scheduledTime,
+        customTitle,
         durationMinutes,
         status,
         notes,

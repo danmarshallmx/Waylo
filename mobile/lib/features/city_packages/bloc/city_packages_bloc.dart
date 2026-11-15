@@ -18,7 +18,7 @@ class CityPackagesBloc extends Bloc<CityPackagesEvent, CityPackagesState> {
     on<DownloadCityPackage>(_onDownloadCityPackage);
     on<DeleteCityPackage>(_onDeleteCityPackage);
     on<CheckForUpdates>(_onCheckForUpdates);
-    on<_DownloadProgressUpdated>(_onDownloadProgressUpdated);
+    on<DownloadProgressUpdated>(_onDownloadProgressUpdated);
     on<CancelDownload>(_onCancelDownload);
   }
 
@@ -86,7 +86,7 @@ class CityPackagesBloc extends Bloc<CityPackagesEvent, CityPackagesState> {
       _downloadSubscription?.cancel();
       _downloadSubscription = progressStream.listen(
         (progress) {
-          add(_DownloadProgressUpdated(event.cityId, progress));
+          add(DownloadProgressUpdated(event.cityId, progress));
         },
         onDone: () async {
           // Download complete — reload data
@@ -106,7 +106,7 @@ class CityPackagesBloc extends Bloc<CityPackagesEvent, CityPackagesState> {
   }
 
   void _onDownloadProgressUpdated(
-    _DownloadProgressUpdated event,
+    DownloadProgressUpdated event,
     Emitter<CityPackagesState> emit,
   ) {
     final currentState = state;

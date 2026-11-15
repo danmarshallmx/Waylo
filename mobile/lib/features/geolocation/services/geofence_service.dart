@@ -14,6 +14,10 @@ class GeofenceService {
   GeofenceCallback? _onGeofenceTriggered;
   StreamSubscription<Position>? _positionStream;
 
+  set onGeofenceTriggered(GeofenceCallback? callback) {
+    _onGeofenceTriggered = callback;
+  }
+
   void setCallback(GeofenceCallback callback) {
     _onGeofenceTriggered = callback;
   }

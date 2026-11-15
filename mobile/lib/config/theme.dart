@@ -180,7 +180,7 @@ class WayloTheme {
       ),
 
       // ── Cards ───────────────────────────────────────────────────────
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: elevationSm,
         shadowColor: Colors.black.withValues(alpha: 0.08),
         shape: RoundedRectangleBorder(
@@ -346,7 +346,7 @@ class WayloTheme {
       ),
 
       // ── Dialog ──────────────────────────────────────────────────────
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusXl),
         ),
@@ -412,7 +412,7 @@ class WayloTheme {
         iconTheme: const IconThemeData(color: Color(0xFFE8E8F0)),
       ),
 
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: elevationSm,
         shadowColor: Colors.black.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
@@ -516,7 +516,7 @@ class WayloTheme {
         space: 1,
       ),
 
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusXl),
         ),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:just_audio/just_audio.dart';
 
 import 'package:waylo/config/app_config.dart';
 import 'package:waylo/core/models/audio_capsule.dart';

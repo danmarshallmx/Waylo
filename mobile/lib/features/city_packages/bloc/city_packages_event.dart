@@ -33,11 +33,11 @@ class CheckForUpdates extends CityPackagesEvent {
   const CheckForUpdates();
 }
 
-class _DownloadProgressUpdated extends CityPackagesEvent {
+class DownloadProgressUpdated extends CityPackagesEvent {
   final String cityId;
   final double progress;
 
-  const _DownloadProgressUpdated(this.cityId, this.progress);
+  const DownloadProgressUpdated(this.cityId, this.progress);
 
   @override
   List<Object?> get props => [cityId, progress];
